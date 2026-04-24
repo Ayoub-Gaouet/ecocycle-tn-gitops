@@ -1,0 +1,21 @@
+﻿apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ecocycle-user-service
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/name: ecocycle-tn
+    app.kubernetes.io/component: user-service
+    app.kubernetes.io/part-of: ecocycle
+spec:
+  namespaceSelector:
+    matchNames:
+      - ecocycle
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ecocycle-tn
+      app.kubernetes.io/component: user-service
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 30s

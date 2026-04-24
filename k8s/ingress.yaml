@@ -1,0 +1,21 @@
+﻿apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecocycle-user-service
+  labels:
+    app.kubernetes.io/name: ecocycle-tn
+    app.kubernetes.io/component: user-service
+    app.kubernetes.io/part-of: ecocycle
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ecocycle.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ecocycle-user-service
+                port:
+                  name: http

@@ -1,0 +1,17 @@
+﻿apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ecocycle
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - mariadb.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  # Enable in EC-9 after kube-prometheus-stack installs the ServiceMonitor CRD.
+  # - servicemonitor.yaml
+
+images:
+  - name: ghcr.io/ayoub-gaouet/ecocycle-tn
+    newTag: dev

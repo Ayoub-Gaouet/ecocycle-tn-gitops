@@ -1,0 +1,7 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecocycle-user-service-config
+data:
+  DB_URL: jdbc:mariadb://ecocycle-mariadb:3306/ecocycle_tn?createDatabaseIfNotExist=true
+  DB_USERNAME: ecocycle
