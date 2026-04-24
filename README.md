@@ -1,4 +1,4 @@
-﻿# ecocycle-tn-gitops
+# ecocycle-tn-gitops
 
 GitOps repository for EcoCycle TN Kubernetes manifests synchronized by ArgoCD.
 
@@ -57,3 +57,66 @@ curl http://localhost:8080/actuator/health
 ```
 
 For ingress on Minikube, enable the ingress addon and map `ecocycle.local` to the Minikube IP in your hosts file.
+
+## Execution Evidence Checklist
+
+Use these commands when preparing screenshots for the Notion documentation and final report.
+
+### 1. Validate manifests locally
+
+```bash
+kubectl kustomize k8s
+```
+
+Capture to add:
+
+- Rendered Namespace, ConfigMap, Secrets, MariaDB StatefulSet, user-service Deployment, Service and Ingress.
+- No YAML or Kustomize error in the terminal.
+
+### 2. Install ArgoCD and create the application
+
+```bash
+minikube start --cpus=4 --memory=8192
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -f argocd/ecocycle-user-service-application.yaml
+kubectl -n argocd get applications
+```
+
+Capture to add:
+
+- Namespace `argocd` created.
+- ArgoCD pods running.
+- Application `ecocycle-user-service` created.
+
+### 3. Follow the synchronized deployment
+
+```bash
+kubectl -n ecocycle get pods,svc,ingress
+kubectl -n ecocycle rollout status deployment/ecocycle-user-service
+kubectl -n ecocycle port-forward svc/ecocycle-user-service 8080:80
+curl http://localhost:8080/actuator/health
+```
+
+Capture to add:
+
+- Namespace `ecocycle` resources created by ArgoCD.
+- User-service rollout completed.
+- Health endpoint returns `UP`.
+- ArgoCD UI status `Synced` and `Healthy`.
+
+### 4. Demonstrate GitOps image bump
+
+After the backend CI pushes a new image, verify the updated tag:
+
+```bash
+git pull
+cat k8s/kustomization.yaml
+kubectl -n ecocycle describe deployment ecocycle-user-service
+```
+
+Capture to add:
+
+- `k8s/kustomization.yaml` containing the new short SHA tag.
+- ArgoCD detecting the Git change.
+- Deployment running the updated image.
