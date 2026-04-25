@@ -1,0 +1,25 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ecocycle-user-service
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: ecocycle-tn
+    app.kubernetes.io/part-of: ecocycle
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Ayoub-Gaouet/ecocycle-tn-gitops.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ecocycle
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
