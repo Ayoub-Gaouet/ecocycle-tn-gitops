@@ -13,4 +13,4 @@ resources:
   - prometheusrule.yaml
 images:
   - name: ghcr.io/ayoub-gaouet/ecocycle-tn
-    newTag: 32a46ef
+    newTag: cf2af90
