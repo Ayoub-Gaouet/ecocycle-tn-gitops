@@ -9,8 +9,8 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
-  # Enable in EC-9 after kube-prometheus-stack installs the ServiceMonitor CRD.
-  # - servicemonitor.yaml
+  - servicemonitor.yaml
+  - prometheusrule.yaml
 images:
   - name: ghcr.io/ayoub-gaouet/ecocycle-tn
     newTag: c92d012

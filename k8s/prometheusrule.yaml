@@ -1,0 +1,49 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ecocycle-user-service-alerts
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/name: ecocycle-tn
+    app.kubernetes.io/component: user-service
+    app.kubernetes.io/part-of: ecocycle
+spec:
+  groups:
+    - name: ecocycle-user-service.rules
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            (
+              sum(rate(http_server_requests_seconds_count{namespace="ecocycle",status=~"5.."}[5m]))
+              /
+              sum(rate(http_server_requests_seconds_count{namespace="ecocycle"}[5m]))
+            ) > 0.05
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: High HTTP 5xx error rate on ecocycle-user-service
+            description: More than 5% of HTTP requests returned 5xx responses during the last 5 minutes.
+
+        - alert: HighRequestLatency
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum(rate(http_server_requests_seconds_bucket{namespace="ecocycle"}[5m])) by (le)
+            ) > 1
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: High HTTP request latency on ecocycle-user-service
+            description: The 95th percentile request latency is above 1 second during the last 5 minutes.
+
+        - alert: PodDown
+          expr: |
+            kube_deployment_status_replicas_available{namespace="ecocycle",deployment="ecocycle-user-service"} < 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: ecocycle-user-service pod is down
+            description: No available replicas are reported for the ecocycle-user-service deployment.
